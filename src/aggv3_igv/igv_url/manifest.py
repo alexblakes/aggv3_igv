@@ -82,7 +82,7 @@ def _load_gel_bams(path: Path) -> pd.DataFrame:
             ],
             header=0,
         )
-        .rename({"weka_file_path": "file_path"})
+        .rename(columns={"weka_file_path": "file_path"})
         .loc[lambda df: df["file_sub_type"] == "BAM"]
         .sort_values(["genome_build", "delivery_date"], ascending=False)
         .drop_duplicates("participant_id")
