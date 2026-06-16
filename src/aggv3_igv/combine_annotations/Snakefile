@@ -4,27 +4,6 @@ from ab_utils.smk import log_path
 configfile: "smk_config.yaml"
 
 
-rule get_aggv3_samples:
-    input:
-        [],
-    output:
-        "data/final/aggv3_samples.txt",
-    params:
-        vcf = config["mnt_aggv3_bavcf"],
-    shell:
-        """
-        #!/usr/bin/env bash
-
-        set -eu
-
-        source src/utils.sh
-
-        bcftools query -l {params.vcf} \
-        | tee >(_log "N samples:" "$(wc -l)") \
-        > {output}
-        """
-
-
 rule tidy_aggv3_ids:
     input:
         "/mnt/file-systems/512426816668-gel-data-resources/dragen3.7.8/AggV3_resources/samples/sample_list/2026-01-23/sample_list_aggv3.csv",
@@ -34,18 +13,6 @@ rule tidy_aggv3_ids:
         log_path("tidy_aggv3_ids", workflow.snakefile),
     script:
         "tidy_aggv3_ids.py"
-
-
-
-rule get_gel_affection:
-    input:
-        "/mnt/file-systems/512426816668-structured-data/100K/v19.0/2025-01-24/data/gel_rare_pedigree_member_100k.tsv",
-    output:
-        "data/interim/samples_gel_rd_affection.txt",
-    log:
-        log_path("get_gel_affection", workflow.snakefile),
-    script:
-        "get_gel_affection.py"
 
 
 rule get_gel_participant:
@@ -73,15 +40,15 @@ rule get_gms_rd_affected:
         "get_gms_affected.py"
 
 
-rule get_rna_bams:
-    input:
-        config["gel_rna_file_paths_new"],
-    output:
-        "data/interim/samples_gel_rna_bams.tsv",
-    log:
-        log_path("get_rna_bams", workflow.snakefile),
-    script:
-        "get_rna_bams.py"
+# rule get_rna_bams:
+#     input:
+#         config["gel_rna_file_paths_new"],
+#     output:
+#         "data/interim/samples_gel_rna_bams.tsv",
+#     log:
+#         log_path("get_rna_bams", workflow.snakefile),
+#     script:
+#         "get_rna_bams.py"
 
 
 rule get_gel_dna_bams:
@@ -106,82 +73,6 @@ rule get_gms_dna_bams:
         "get_gms_dna_bams.py"
 
 
-rule get_gel_eq_outcomes:
-    input:
-        config["gel_interpretation"],
-    output:
-        "data/interim/samples_gel_solved_eq.tsv",
-    log:
-        log_path("get_gel_eq_outcomes", workflow.snakefile),
-    script:
-        "get_gel_eq_outcomes.py"
-
-
-rule get_gel_dd_outcomes:
-    input:
-        config["gel_discovery"],
-    output:
-        "data/interim/samples_gel_solved_dd.txt",
-    log:
-        log_path("get_gel_dd_outcomes", workflow.snakefile),
-    script:
-        "get_gel_dd_outcomes.py"
-
-
-rule get_gms_eq_outcomes:
-    input:
-        config["gms_outcome"],
-    output:
-        "data/interim/samples_gms_solved_eq.tsv",
-    log:
-        log_path("get_gms_eq_outcomes", workflow.snakefile),
-    script:
-        "get_gms_eq_outcomes.py"
-
-
-rule get_gel_hpo:
-    input:
-        "/mnt/file-systems/512426816668-structured-data/100K/v19.0/2025-01-24/data/gel_rare_participant_phenotype_100k.tsv",
-    output:
-        "data/interim/samples_gel_hpo.tsv",
-    log:
-        log_path("get_gel_hpo", workflow.snakefile),
-    script:
-        "get_gel_hpo.py"
-
-
-rule get_gms_hpo:
-    input:
-        config["gms_phenotype"],
-    output:
-        "data/interim/samples_gms_hpo.tsv",
-    log:
-        log_path("get_gms_hpo", workflow.snakefile),
-    script:
-        "get_gms_hpo.py"
-
-
-rule catenate_affection:
-    input:
-        "data/interim/samples_gel_rd_affection.txt",
-        "data/interim/samples_gms_rd_affection.txt",
-    output:
-        "data/interim/samples_cat_rd_affection.tsv",
-    log:
-        log_path("catenate_affection", workflow.snakefile),
-    shell:
-        """
-        exec 2> >(tee {log} >&2)
-
-        source src/utils.sh
-
-        cat {input} \
-        | tee >(_log "Unique status:\n" "$(cut -f 2 | sort | uniq -c)") \
-        | tee >(_log "Output lines:" "$(wc -l)") \
-        > {output}
-        """
-
-
 rule catenate_relation:
     input:
         "data/interim/samples_gel_rd_relation.tsv",
@@ -197,9 +88,9 @@ rule catenate_relation:
         source src/utils.sh
 
         cat {input} \
-        | tee >(_log "Unique relation:\n" "$(cut -f 2 | sort | uniq -c)") \
-        | tee >(_log "Output lines:" "$(wc -l)") \
-        > {output}
+            | tee >(_log "Unique relation:\n" "$(cut -f 2 | sort | uniq -c)") \
+            | tee >(_log "Output lines:" "$(wc -l)") \
+                >{output}
         """
 
 
@@ -218,9 +109,9 @@ rule catenate_proband:
         source src/utils.sh
 
         cat {input} \
-        | tee >(_log "Proband value_counts:\n" "$(cut -f 2 | sort | uniq -c)") \
-        | tee >(_log "Output lines:" "$(wc -l)") \
-        > {output}
+            | tee >(_log "Proband value_counts:\n" "$(cut -f 2 | sort | uniq -c)") \
+            | tee >(_log "Output lines:" "$(wc -l)") \
+                >{output}
         """
 
 
@@ -239,52 +130,11 @@ rule catenate_dna_bams:
         source src/utils.sh
 
         cat {input} \
-        | tee >(_log "Assembly value_counts:\n" "$(cut -f 2 | sort | uniq -c)") \
-        | tee >(_log "Unique participant IDs:" "$(cut -f 1 | sort -u | wc -l)") \
-        | tee >(_log "Unique BAM paths:" "$(cut -f 3 | sort -u | wc -l)") \
-        | tee >(_log "Output lines:" "$(wc -l)") \
-        > {output}
-        """
-
-
-rule catenate_solved_eq:
-    input:
-        "data/interim/samples_gel_solved_eq.tsv",
-        "data/interim/samples_gms_solved_eq.tsv",
-    output:
-        "data/interim/samples_cat_solved_eq.tsv",
-    log:
-        log_path("catenate_solved_eq", workflow.snakefile),
-    shell:
-        """
-        exec 2> >(tee {log} >&2)
-
-        source src/utils.sh
-
-        cat {input} \
-        | tee >(_log "Solved value counts:\n" "$(cut -f 2 | sort | uniq -c)") \
-        | tee >(_log "Output lines:" "$(wc -l)") \
-        > {output}
-        """
-
-
-rule catenate_hpo:
-    input:
-        "data/interim/samples_gel_hpo.tsv",
-        "data/interim/samples_gms_hpo.tsv",
-    output:
-        "data/interim/samples_cat_hpo.tsv",
-    log:
-        log_path("catenate_hpo", workflow.snakefile),
-    shell:
-        """
-        exec 2> >(tee {log} >&2)
-
-        source src/utils.sh
-
-        cat {input} \
-        | tee >(_log "Output lines:" "$(wc -l)") \
-        > {output}
+            | tee >(_log "Assembly value_counts:\n" "$(cut -f 2 | sort | uniq -c)") \
+            | tee >(_log "Unique participant IDs:" "$(cut -f 1 | sort -u | wc -l)") \
+            | tee >(_log "Unique BAM paths:" "$(cut -f 3 | sort -u | wc -l)") \
+            | tee >(_log "Output lines:" "$(wc -l)") \
+                >{output}
         """
 
 

@@ -1,0 +1,10 @@
+[genomes]
+GRCh38 = "/public_data_resources/IGV/hg38/hg38_local.json"
+GRCh37 = "/public_data_resources/IGV/hg19/hg19_local.genome"
+
+[s3_files]
+aggv3_sample_list = "s3://512426816668-gel-data-resources/dragen3.7.8/AggV3_resources/samples/sample_list/2026-01-23/sample_list_aggv3.csv"
+gel_file_paths = "s3://512426816668-structured-data/100K/v19.0/2025-01-24/data/gel_genome_file_paths_and_types_100k.tsv"
+gms_file_paths = "s3://512426816668-structured-data/GMS/v5.0/2025-12-17/data/gel_genome_file_paths_and_types_gms.tsv"
+gel_participant = "s3://512426816668-structured-data/100K/v19.0/2025-01-24/data/gel_participant_100k.tsv"
+gms_participant = "s3://512426816668-structured-data/GMS/v5.0/2025-12-17/data/gel_referral_participant_gms.tsv"

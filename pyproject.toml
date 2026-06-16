@@ -34,12 +34,16 @@ snakefmt = ">=1.0.0,<2"
 bcftools = ">=1.23.1,<2"
 bedtools = ">=2.31.1,<3"
 
+[project.scripts]
+aggv3_igv = "aggv3_igv.igv_url.cli:main"
+
 [tool.pixi.pypi-dependencies]
 pandas-checks = '>=2,<3'
 statannotations = '>=0.7.2,<0.8'
 adjusttext = ">=1.3.0,<2"
 aggv3_igv = { path = ".", editable = true } # noqa
 ab_utils = { git = "https://github.com/alexblakes/ab_utils.git", branch='main'}
+boto3 = ">=1.35"
 
 [tool.pixi.pypi-exclude-newer]
 aggv3_igv = "1 second"
