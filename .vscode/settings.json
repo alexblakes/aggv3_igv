@@ -1,0 +1,25 @@
+{
+    "workbench.colorTheme": "Default Dark Modern",
+    "workbench.sideBar.location": "right",
+    "explorer.autoReveal": "focusNoScroll",
+    "git.enabled": true,
+    "git.confirmSync": false,
+    "jupyter.askForKernelRestart": false,
+    "jupyter.notebookFileRoot": "${workspaceFolder}",
+    "jupyter.runStartupCommands": [
+        "%load_ext autoreload",
+        "%autoreload 2"
+    ],
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "[snakemake]": {
+        "editor.defaultFormatter": "tfehlmann.snakefmt"
+    },
+    "python-envs.defaultEnvManager": "renan-r-santos.pixi-code:pixi",
+    "python-envs.defaultPackageManager": "renan-r-santos.pixi-code:pixi",
+    "errorLens.enabledDiagnosticLevels": [
+        "error",
+        "warning"
+    ],
+}

@@ -1,0 +1,28 @@
+# Custom
+data/
+log/
+.snakemake/
+.gitattributes
+.DS_Store
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Distribution / packaging
+build/
+dist/
+eggs/
+.eggs/
+*.egg-info/
+*.egg
+MANIFEST
+
+# Pixi
+.pixi/*
+!.pixi/config.toml
+
+# Ruff
+.ruff_cache/
+
+# IDE files
+# .vscode/

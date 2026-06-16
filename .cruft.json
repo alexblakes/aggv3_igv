@@ -1,0 +1,18 @@
+{
+  "template": "https://github.com/alexblakes/cookiecutter-genomics.git",
+  "commit": "cf789f216101455cc420254eb10585421f2e405a",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "AggV3 IGV URLs",
+      "package_name": "aggv3_igv",
+      "author_name": "Alex Blakes",
+      "project_short_description": "A tool to create IGV URLs for participants and family members in the NGRL.",
+      "package_version": "0.1.0",
+      "python_version": "3.13",
+      "_template": "https://github.com/alexblakes/cookiecutter-genomics.git",
+      "_commit": "cf789f216101455cc420254eb10585421f2e405a"
+    }
+  },
+  "directory": null
+}

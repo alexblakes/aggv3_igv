@@ -1,0 +1,34 @@
+{
+  "Snakefile boilerplate": {
+    "scope": "snakemake",
+    "prefix": ["snake", "snakemake", "smk"],
+    "description": "Snakefile boilerplate",
+    "body": [
+      "from ab_utils.smk import log_path",
+      "",
+      "configfile: \"${1:config.yaml}\"",
+      "",
+      "",
+      "rule all:",
+      "    default_target: True",
+      "    input:",
+      "        \"\","
+    ]
+  },
+  "Rule stub (script)": {
+    "scope": "snakemake",
+    "prefix": ["rule","script"],
+    "description": "Snakemake rule stub with a script directive",
+    "body": [
+      "rule ${1:rule_name}:",
+      "    input:",
+      "        \"\",",
+      "    output:",
+      "        \"\",",
+      "    log:",
+      "        log_path(\"${1:rule_name}\", workflow.snakefile),",
+      "    script:",
+      "        \"${1:rule_name}.py\"$0"
+    ]
+  },
+}

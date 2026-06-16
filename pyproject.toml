@@ -1,0 +1,54 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools"]
+
+[project]
+name = "aggv3_igv"
+version = "0.1.0"
+description = "A tool to create IGV URLs for participants and family members in the NGRL."
+readme = "README.md"
+authors = [
+  {name = "Alex Blakes"}
+]
+license = {text = "MIT"}
+
+[tool.pixi.workspace]
+channels = ["conda-forge", "bioconda"]
+platforms = ["osx-arm64", "linux-64"]
+conda-pypi-map = { conda-forge = "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json", bioconda = "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json" }
+exclude-newer = "7 days"
+
+[tool.pixi.dependencies]
+python = "3.13.*"
+numpy = ">=2.4.3,<3"
+pandas = "3.*"
+matplotlib = ">=3.10.8,<4"
+seaborn = ">=0.13.2,<0.14"
+scipy = ">=1.17.1,<2"
+statsmodels = ">=0.14.6,<0.15"
+ipykernel = ">=7.2.0,<8"
+pip = ">=26.0.1,<27"
+ruff = ">=0.15.9,<0.16"
+snakemake-minimal = ">=9.18" # Breaking change in 9.17; reversed in 9.18
+snakefmt = ">=1.0.0,<2"
+bcftools = ">=1.23.1,<2"
+bedtools = ">=2.31.1,<3"
+
+[tool.pixi.pypi-dependencies]
+pandas-checks = '>=2,<3'
+statannotations = '>=0.7.2,<0.8'
+adjusttext = ">=1.3.0,<2"
+aggv3_igv = { path = ".", editable = true } # noqa
+ab_utils = { git = "https://github.com/alexblakes/ab_utils.git", branch='main'}
+
+[tool.pixi.pypi-exclude-newer]
+aggv3_igv = "1 second"
+pandas-checks = "1 second"
+ab_utils = "1 second"
+
+[tool.pixi.tasks]
+ruff_lint = "ruff check --fix"
+ruff_format = "ruff format"
+smk_format = "snakefmt Snakefile scripts/"
+fmt = { depends-on = ["ruff_lint", "ruff_format", "smk_format"] }
+smk = "snakemake --cores 4"
