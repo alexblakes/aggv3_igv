@@ -1,0 +1,44 @@
+from ab_utils.smk import log_path
+
+
+configfile: "smk_config.yaml"
+
+
+rule tidy_data_for_igv:
+    input:
+        "data/final/merged_annotations.tsv",
+    output:
+        "data/interim/data_for_igv.tsv",
+    log:
+        log_path("tidy_data_for_igv", workflow.snakefile),
+    script:
+        "tidy_data_for_igv.py"
+
+
+rule construct_igv_url:
+    input:
+        "data/interim/data_for_igv.tsv",
+    output:
+        "data/final/igv_urls.tsv",
+    log:
+        log_path("construct_igv_url", workflow.snakefile),
+    script:
+        "construct_igv_url.py"
+
+
+rule filter_igv_by_cohort:
+    input:
+        igv="data/final/igv_urls.tsv",
+        variants="data/interim/rnu12_double_hets_ukb_filtered_in_{cohort}.tsv",
+    output:
+        "data/final/igv_urls_{cohort}.tsv",
+    log:
+        log_path("filter_igv_by_cohort_{cohort}", workflow.snakefile),
+    script:
+        "filter_igv_by_cohort.py"
+
+
+rule all:
+    default_target: True
+    input:
+        expand("data/final/igv_urls_{cohort}.tsv", cohort=["cases", "controls"]),
