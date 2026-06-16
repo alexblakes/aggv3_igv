@@ -18,6 +18,7 @@
     },
     "python-envs.defaultEnvManager": "ms-python.python:system",
     "python-envs.defaultPackageManager": "ms-python.python:pip",
+    "python.terminal.activateEnvironment": false,
     "errorLens.enabledDiagnosticLevels": [
         "error",
         "warning"
