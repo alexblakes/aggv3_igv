@@ -18,7 +18,7 @@
     },
     "python-envs.defaultEnvManager": "ms-python.python:system",
     "python-envs.defaultPackageManager": "ms-python.python:pip",
-    "python.terminal.activateEnvironment": false,
+    "python.terminal.activateEnvironment": false, // Avoids auto-activation of Pixi envs, which interferes with debugging
     "errorLens.enabledDiagnosticLevels": [
         "error",
         "warning"
