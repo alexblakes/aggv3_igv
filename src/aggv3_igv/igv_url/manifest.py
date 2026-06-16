@@ -77,11 +77,12 @@ def _load_gel_bams(path: Path) -> pd.DataFrame:
                 "participant_id",
                 "delivery_date",
                 "genome_build",
-                "file_path",
+                "weka_file_path",
                 "file_sub_type",
             ],
             header=0,
         )
+        .rename({"weka_file_path": "file_path"})
         .loc[lambda df: df["file_sub_type"] == "BAM"]
         .sort_values(["genome_build", "delivery_date"], ascending=False)
         .drop_duplicates("participant_id")
@@ -132,8 +133,14 @@ def _load_gel_participant(path: Path) -> pd.DataFrame:
                 x["biological_relationship_to_proband"],
             )
         )
-        .rename(columns={"biological_relationship_to_proband": "relationship_to_proband"})
-        .assign(proband=lambda x: x["participant_type"].map({"Proband": True, "Relative": False}))
+        .rename(
+            columns={"biological_relationship_to_proband": "relationship_to_proband"}
+        )
+        .assign(
+            proband=lambda x: x["participant_type"].map(
+                {"Proband": True, "Relative": False}
+            )
+        )
         .drop_duplicates("participant_id")
         .loc[:, ["participant_id", "relationship_to_proband", "proband"]]
     )
@@ -175,7 +182,6 @@ def build_manifest(s3_files: dict, refresh: bool = False) -> pd.DataFrame:
         "participant_id"
     )
 
-    return (
-        ids.merge(dna, on="participant_id", how="left")
-        .merge(relation, on="participant_id", how="left")
+    return ids.merge(dna, on="participant_id", how="left").merge(
+        relation, on="participant_id", how="left"
     )
