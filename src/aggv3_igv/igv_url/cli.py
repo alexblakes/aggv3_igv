@@ -31,14 +31,14 @@ def _build_parser() -> argparse.ArgumentParser:
         prog="aggv3_igv",
         description="Construct igv:// URLs for participants or samples in AggV3.",
     )
-    parser.add_argument("--locus", required=True, help="Genomic locus")
-    parser.add_argument("--participants", metavar="IDs", help="Comma-separated participant IDs")
-    parser.add_argument("--participants-file", type=Path, metavar="FILE", help="File with one participant ID per line")
-    parser.add_argument("--samples", metavar="IDs", help="Comma-separated sample IDs (platekeys)")
-    parser.add_argument("--samples-file", type=Path, metavar="FILE", help="File with one sample ID per line")
-    parser.add_argument("--window", type=int, metavar="BP", help="Half-window around a variant locus")
+    parser.add_argument("-r", "--region", required=True, help="Genomic locus")
+    parser.add_argument("-p", "--participants", metavar="IDs", help="Comma-separated participant IDs")
+    parser.add_argument("-P", "--participants-file", type=Path, metavar="FILE", help="File with one participant ID per line")
+    parser.add_argument("-s", "--samples", metavar="IDs", help="Comma-separated sample IDs (platekeys)")
+    parser.add_argument("-S", "--samples-file", type=Path, metavar="FILE", help="File with one sample ID per line")
+    parser.add_argument("-w", "--window", type=int, metavar="BP", help="Half-window around a variant locus")
     parser.add_argument("--no-participant-id", action="store_true", help="Exclude participant ID from track labels")
-    parser.add_argument("--genome", metavar="BUILD", help="Override genome build (e.g. GRCh38); other assemblies skipped")
+    parser.add_argument("-a", "--assembly", metavar="BUILD", help="Override genome build (e.g. GRCh38); other assemblies skipped")
     parser.add_argument("--refresh-cache", action="store_true", help="Re-download all S3 files before running")
     parser.add_argument("-o", "--output", type=Path, metavar="FILE", help="Write TSV to this file (default: stdout)")
     return parser
@@ -58,7 +58,7 @@ def main() -> None:
         parser.error("Provide at least one of --participants, --participants-file, --samples, --samples-file.")
 
     cfg = load_config()
-    locus = parse_locus(args.locus, window=args.window)
+    locus = parse_locus(args.region, window=args.window)
 
     print("Loading manifest…", file=sys.stderr)
     manifest = build_manifest(cfg["s3_files"], refresh=args.refresh_cache)
@@ -91,16 +91,16 @@ def main() -> None:
         matched = matched.loc[~no_bam]
 
     # Optionally filter by assembly
-    if args.genome:
-        excluded = matched.loc[matched["dna_assembly"] != args.genome, "participant_id"].unique()
+    if args.assembly:
+        excluded = matched.loc[matched["dna_assembly"] != args.assembly, "participant_id"].unique()
         for pid in excluded:
             print(
-                f"Warning: participant '{pid}' has no data for assembly '{args.genome}'; skipping.",
+                f"Warning: participant '{pid}' has no data for assembly '{args.assembly}'; skipping.",
                 file=sys.stderr,
             )
-        matched = matched.loc[matched["dna_assembly"] == args.genome]
+        matched = matched.loc[matched["dna_assembly"] == args.assembly]
         if matched.empty:
-            sys.exit(f"No samples remain after filtering for assembly '{args.genome}'. Exiting.")
+            sys.exit(f"No samples remain after filtering for assembly '{args.assembly}'. Exiting.")
 
     if matched.empty:
         sys.exit("No samples with BAM/CRAM paths remain. Exiting.")
