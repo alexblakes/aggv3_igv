@@ -3,8 +3,8 @@
 ## Context
 This is a CLI tool to produce URLs ready for use in the Integrative Genomics Viewer.
 Given a set of sample IDs and a
-genomic locus, it fetches current metadata from S3, constructs `igv://`
-protocol-handler URLs, and prints a TSV. The primary use is interactive 
+genomic locus, it fetches current metadata from S3, constructs IGV REST API
+URLs (`http://localhost:<port>/load?...`), and prints a TSV. The primary use is interactive 
 viewing of DNA BAMs in IGV for selected participants and their relations.
 
 ---
@@ -24,7 +24,7 @@ viewing of DNA BAMs in IGV for selected participants and their relations.
         │
   group by (family_grouping, dna_assembly)
         │
-  build igv:// URL per group
+  build IGV REST URL per group
         │
   one output row per supplied participant/sample ID
         │
@@ -161,13 +161,15 @@ Chromosome prefix normalisation: `22` → `chr22` (add prefix if absent).
 
 ## URL Construction
 
-### igv:// URL format
+### IGV REST API URL format
 ```
-igv://load?file=<path1>,<path2>,...&name=<label1>,<label2>,...&locus=<locus>&genome=<genome_path>
+http://localhost:<port>/load?file=<path1>,<path2>,...&locus=<locus>&genome=<genome_path>&merge=false&name=<label1>,<label2>,...
 ```
 
-- Multiple files are **comma-separated** within a single `file=` parameter
-  (consistent with both the IGV REST API and the protocol handler spec).
+- Uses the IGV local REST API (not the `igv://` protocol handler).
+- Port is read from `[url] port` in the config file (default in the existing
+  pipeline: `60151`).
+- Multiple files are **comma-separated** within a single `file=` parameter.
 - `name=` is a comma-separated list in the same order as `file=`.
 - All values are URL-encoded (spaces → `%20`, etc.).
 - NFS paths are used verbatim as absolute paths (e.g. `/mnt/data/sample.bam`).
@@ -299,7 +301,7 @@ aggv3_igv --participants INVALID_ID --locus chr1:1000000
 aggv3_igv --participants 111000001 --locus chr1:1000000 --refresh-cache
 ```
 
-Confirm output TSV has correct columns, URL scheme is `igv://load?...`, track
+Confirm output TSV has correct columns, URL scheme is `http://localhost:<port>/load?...`, track
 names match the label format, and genome parameter reflects the config file
 path.
 

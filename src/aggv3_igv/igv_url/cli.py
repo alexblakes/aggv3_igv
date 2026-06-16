@@ -112,6 +112,7 @@ def main() -> None:
             grp,
             locus=locus,
             genomes=cfg.get("genomes", {}),
+            port=str(cfg["url"]["port"]),
             no_participant_id=args.no_participant_id,
         )
 

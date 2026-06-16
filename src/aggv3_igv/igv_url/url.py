@@ -15,6 +15,7 @@ def build_url(
     group: pd.DataFrame,
     locus: str,
     genomes: dict,
+    port: str,
     no_participant_id: bool = False,
 ) -> str:
     # Proband first, then alphabetically by participant_id
@@ -53,9 +54,10 @@ def build_url(
     genome_val = quote(str(genome_path), safe="/._-")
 
     return (
-        f"igv://load?"
+        f"http://localhost:{port}/load?"
         f"file={file_val}"
-        f"&name={name_val}"
         f"&locus={locus_val}"
         f"&genome={genome_val}"
+        f"&merge=false"
+        f"&name={name_val}"
     )

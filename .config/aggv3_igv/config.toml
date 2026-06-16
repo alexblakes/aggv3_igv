@@ -1,3 +1,6 @@
+[url]
+port = "60151"
+
 [genomes]
 GRCh38 = "/public_data_resources/IGV/hg38/hg38_local.json"
 GRCh37 = "/public_data_resources/IGV/hg19/hg19_local.genome"
