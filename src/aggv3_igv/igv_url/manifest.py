@@ -99,7 +99,7 @@ def _load_gms_bams(path: Path) -> pd.DataFrame:
                 "participant_id",
                 "delivery_date",
                 "genome_build",
-                "file_path",
+                "path",
                 "file_sub_type",
             ],
             header=0,
