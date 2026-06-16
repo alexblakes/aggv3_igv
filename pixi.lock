@@ -531,7 +531,7 @@ packages:
 - pypi: ./
   name: aggv3-igv
   version: 0.1.0
-  sha256: 8f047c76c7c276623fca9779605817d87f02e77abd9aea9d945954e66f2739f4
+  sha256: abc86237eaab413ca9af17ae21cb80220c006f87b465615ab02a739e3d926579
 - conda: https://conda.anaconda.org/conda-forge/linux-64/alsa-lib-1.2.16-hb03c661_0.conda
   sha256: 64484cb7e7cf65d9c7188498d595125a6e0751604dd7fb483e1bb327eec0f738
   md5: 18d273b22e96c97c2017813f099faa82
