@@ -104,6 +104,7 @@ def _load_gms_bams(path: Path) -> pd.DataFrame:
             ],
             header=0,
         )
+        .rename(columns={"path": "file_path"})
         .loc[lambda df: df["file_sub_type"] == "CRAM"]
         .sort_values("delivery_date", ascending=False)
         .drop_duplicates("participant_id")
