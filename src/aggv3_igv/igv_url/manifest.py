@@ -128,6 +128,9 @@ def _load_gel_participant(path: Path) -> pd.DataFrame:
                 "biological_relationship_to_proband",
                 "other_biological_relationship_to_proband",
             ],
+            dtype={
+                "participant_id": str,
+            },
         )
         .assign(
             biological_relationship_to_proband=lambda x: np.where(
