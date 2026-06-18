@@ -118,8 +118,8 @@ aggv3_igv [OPTIONS] -r/--region LOCUS
 
 ### ID selection (at least one required)
 
-The `--participants` and `--samples` groups are mutually exclusive — only one
-ID type may be used per invocation.
+`-p`/`-P`/`-s`/`-S` form a single **required, mutually-exclusive** group:
+exactly one of the four must be supplied per invocation (enforced by argparse).
 
 **Participant IDs** (match against `participant_id` column):
 | Flag | Description |
@@ -133,8 +133,8 @@ ID type may be used per invocation.
 | `-s / --samples s1,s2,s3` | Comma-separated sample IDs (platekeys, e.g. `LP1234567-DNA_A01`) |
 | `-S / --samples-file FILE` | Path to a text file with one sample ID per line (blank lines and `#` comments ignored) |
 
-Within each group, the comma flag and the file flag may be combined; the union
-of IDs is used.
+The comma flag and the file flag cannot be combined — supplying more than one of
+`-p`/`-P`/`-s`/`-S` is a usage error.
 
 ### Optional
 | Flag | Default | Description |

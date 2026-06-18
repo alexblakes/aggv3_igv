@@ -18,35 +18,39 @@ def _read_id_file(path: Path) -> list[str]:
     return [s.strip() for s in lines if s.strip() and not s.strip().startswith("#")]
 
 
-def _collect_ids(flag_value: str | None, file_path: Path | None) -> list[str]:
-    ids: list[str] = []
-    if flag_value:
-        ids.extend(i.strip() for i in flag_value.split(",") if i.strip())
-    if file_path:
-        ids.extend(_read_id_file(file_path))
-    return list(dict.fromkeys(ids))  # deduplicate, preserve order
+def _split_ids(value: str) -> list[str]:
+    return [i.strip() for i in value.split(",") if i.strip()]
 
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="aggv3_igv",
-        description="Construct igv:// URLs for participants or samples in AggV3.",
+        description="""
+        Construct IGV URLs in CloudOS.
+
+        Run this tool in any interactive CloudOS environment. The tab-separated output
+        includes an IGV URL for each participant. Click the URL, or copy/paste it into a
+        browser, to launch an IGV session zoomed to the given region, and showing IGV 
+        tracks for the given participant and their family members.
+        """,
     )
     parser.add_argument("-r", "--region", required=True, help="chr:pos|chr:beg-end")
-    parser.add_argument(
+
+    ids = parser.add_mutually_exclusive_group(required=True)
+    ids.add_argument(
         "-p", "--participants", metavar="IDs", help="Comma-separated participant IDs"
     )
-    parser.add_argument(
+    ids.add_argument(
         "-P",
         "--participants-file",
         type=Path,
         metavar="FILE",
         help="File with one participant ID per line",
     )
-    parser.add_argument(
+    ids.add_argument(
         "-s", "--samples", metavar="IDs", help="Comma-separated sample IDs (platekeys)"
     )
-    parser.add_argument(
+    ids.add_argument(
         "-S",
         "--samples-file",
         type=Path,
@@ -94,32 +98,23 @@ def main() -> None:
     parser = _build_parser()
     args = parser.parse_args()
 
-    # Validate: must use participants OR samples, not both, not neither
-    using_participants = bool(args.participants or args.participants_file)
-    using_samples = bool(args.samples or args.samples_file)
-
-    if using_participants and using_samples:
-        parser.error(
-            "--participants/--participants-file and --samples/--samples-file are mutually exclusive."
-        )
-    if not using_participants and not using_samples:
-        parser.error(
-            "Provide at least one of --participants, --participants-file, --samples, --samples-file."
-        )
-
     cfg = load_config()
     locus = parse_locus(args.region, window=args.window)
 
     print("Loading manifest…", file=sys.stderr)
     manifest = build_manifest(cfg["s3_files"], refresh=args.refresh_cache)
 
-    # Collect and resolve supplied IDs
-    if using_participants:
-        supplied_ids = _collect_ids(args.participants, args.participants_file)
-        id_col = "participant_id"
-    else:
-        supplied_ids = _collect_ids(args.samples, args.samples_file)
-        id_col = "sample_id"
+    # Resolve the single supplied ID source (argparse guarantees exactly one)
+    if args.participants is not None:
+        supplied_ids, id_col = _split_ids(args.participants), "participant_id"
+    elif args.participants_file is not None:
+        supplied_ids, id_col = _read_id_file(args.participants_file), "participant_id"
+    elif args.samples is not None:
+        supplied_ids, id_col = _split_ids(args.samples), "sample_id"
+    else:  # args.samples_file
+        supplied_ids, id_col = _read_id_file(args.samples_file), "sample_id"
+
+    supplied_ids = list(dict.fromkeys(supplied_ids))  # dedupe, preserve order
 
     # Filter manifest to matched rows; warn on unknowns
     known = set(manifest[id_col].dropna())
