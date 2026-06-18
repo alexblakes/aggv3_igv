@@ -92,9 +92,11 @@ instance profile in the research environment — no explicit credentials needed)
 
 ## Configuration File
 
-Location: `.config/aggv3_igv/config.toml` within the repo (doubles as the
-deployed user config; users place it at this path relative to their working
-directory or at `~/.config/aggv3_igv/config.toml`).
+A default config ships **bundled with the package** at
+`src/aggv3_igv/config.toml`. At runtime the tool searches, in order:
+`./config.toml`, `./.config/aggv3_igv/config.toml`,
+`~/.config/aggv3_igv/config.toml`, and finally the bundled default. Place a file
+at any earlier path to override the bundled config.
 
 - The `[genomes]` paths are passed as the `genome=` parameter in IGV URLs.
 - For CRAM files, IGV derives the FASTA reference from the genome descriptor.

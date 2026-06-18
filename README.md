@@ -6,12 +6,29 @@ includes an IGV URL for each participant. Click the URL, or copy/paste it into a
 browser, to launch an IGV session zoomed to the given region, and showing IGV 
 tracks for the given participant and their family members.
 
-## Running the tool
+## Installation
 
-From any interactive CloudOS workstation.
+Open a terminal in any interactive CloudOS session.
 
-Install uv
+### Global install
+Install uv:
 `conda install uv`
 
-Run the tool
-`uvx --from git+https://github.com/alexblakes/aggv3_igv.git aggv3_igv -h`
+Install aggv3_igv:
+`uv tool install git+https://github.com/alexblakes/aggv3_igv.git`
+
+(You might need to update your path and/or restart your shell):
+``` bash
+uv tool update-shell
+bash
+```
+
+Run the tool:
+`aggv3_igv -h`
+
+### Install to a Pixi project
+Within an existing Pixi project:
+```bash
+pixi add --pypi 'aggv3_igv @ https://github.com/alexblakes/aggv3_igv.git'
+pixi run aggv3_igv -h
+```

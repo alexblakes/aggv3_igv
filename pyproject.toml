@@ -24,6 +24,9 @@ aggv3_igv = "aggv3_igv.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+aggv3_igv = ["config.toml"]
+
 [tool.pixi.workspace]
 channels = ["conda-forge", "bioconda"]
 platforms = ["osx-arm64", "linux-64"]
