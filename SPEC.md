@@ -181,11 +181,15 @@ http://localhost:<port>/load?file=<path1>,<path2>,...&locus=<locus>&genome=<geno
    `--participants`/`--participants-file` was used) or `sample_id` (if
    `--samples`/`--samples-file` was used); unknown IDs produce a warning and
    are skipped.
-2. Group all matched samples by `(family_grouping, dna_assembly)`.
+2. Identify the `(family_grouping, dna_assembly)` groups the matched IDs belong
+   to. For each such group, gather **all** family members with a BAM/CRAM in the
+   manifest (relations are auto-included, not just the supplied IDs), mirroring
+   the historic pipeline.
 3. For each group, sort samples so the proband comes first (matching the
    existing pipeline convention).
-4. Construct one URL per group. The same URL will appear in multiple output rows
-   if more than one supplied ID belongs to the same family group.
+4. Construct one URL per group, with the group's BAM paths and track labels
+   comma-joined in `file=` / `name=`. The same URL appears in multiple output
+   rows if more than one supplied ID belongs to the same family group.
 5. Output one row **per supplied ID** that was successfully matched.
 
 ### Mixed-build handling
@@ -265,16 +269,16 @@ group and assembly, they each get their own row but share the same `igv_url`.
 
 | File | Role |
 |---|---|
-| `src/aggv3_igv/igv_url/cli.py` | Argument parsing, orchestration |
-| `src/aggv3_igv/igv_url/config.py` | Config file loading (`[url]` + `[genomes]` + `[s3_files]`) |
-| `src/aggv3_igv/igv_url/manifest.py` | S3 download, caching, join logic (mirrors `combine_annotations`) |
-| `src/aggv3_igv/igv_url/locus.py` | Locus string parsing and normalisation |
-| `src/aggv3_igv/igv_url/url.py` | IGV REST API URL construction |
+| `src/aggv3_igv/cli.py` | Argument parsing, orchestration |
+| `src/aggv3_igv/config.py` | Config file loading (`[url]` + `[genomes]` + `[s3_files]`) |
+| `src/aggv3_igv/manifest.py` | S3 download, caching, join logic (mirrors `combine_annotations`) |
+| `src/aggv3_igv/locus.py` | Locus string parsing and normalisation |
+| `src/aggv3_igv/url.py` | IGV REST API URL construction |
 | `pyproject.toml` | `[project.scripts]` entry and `boto3` dependency |
 
-The code lives under `src/aggv3_igv/igv_url/`. Existing scripts
-(`construct_igv_url.py`, `tidy_data_for_igv.py`, `filter_igv_by_cohort.py`) are
-the legacy pipeline and are **not modified**.
+The code lives directly under `src/aggv3_igv/`. The legacy pipeline scripts
+under `src/aggv3_igv/igv_url/` (`construct_igv_url.py`, `tidy_data_for_igv.py`,
+`filter_igv_by_cohort.py`) are **not modified**.
 
 ---
 
