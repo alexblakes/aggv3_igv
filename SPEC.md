@@ -40,7 +40,9 @@ Five S3 files are enumerated in the `[s3_files]` section of the config file.
 ### Join logic
 
 **Step 1 — IDs** (`aggv3_sample_list`): columns `participant_id`,
-`family_grouping`, `platekey` (= `sample_id`), `karyotype_est`, `type`.
+`family_grouping`, `platekey` (= `sample_id`),
+`dragen_karyotypic_sex_estimation` (→ `karyotype_est`), `type`. Deduplicated on
+`participant_id` (first row kept).
 
 **Step 2 — DNA paths**: read `gel_file_paths` (filter `file_sub_type == "BAM"`,
 keep most recent per `participant_id`) and `gms_file_paths` (filter
@@ -67,7 +69,7 @@ construction.
 | `participant_id` | `aggv3_sample_list` |
 | `sample_id` | `platekey` from `aggv3_sample_list` |
 | `family_grouping` | `aggv3_sample_list` |
-| `karyotype_est` | `aggv3_sample_list` |
+| `karyotype_est` | `dragen_karyotypic_sex_estimation` from `aggv3_sample_list` |
 | `dna_bam` | `gel_file_paths` / `gms_file_paths` |
 | `dna_assembly` | `gel_file_paths` / `gms_file_paths` |
 | `relationship_to_proband` | `gel_participant` / `gms_participant` |
@@ -106,13 +108,13 @@ directory or at `~/.config/aggv3_igv/config.toml`).
 Entry point: `aggv3_igv`
 
 ```
-aggv3_igv [OPTIONS] --locus LOCUS
+aggv3_igv [OPTIONS] -r/--region LOCUS
 ```
 
 ### Required
 | Flag | Description |
 |---|---|
-| `--locus LOCUS` | Genomic locus (see Locus Formats below) |
+| `-r / --region LOCUS` | Genomic locus (see Locus Formats below) |
 
 ### ID selection (at least one required)
 
@@ -147,7 +149,7 @@ of IDs is used.
 
 ## Locus Formats
 
-The `--locus` argument accepts three forms:
+The `-r` / `--region` argument accepts three forms:
 
 | Form | Example | Behaviour |
 |---|---|---|
@@ -187,7 +189,7 @@ http://localhost:<port>/load?file=<path1>,<path2>,...&locus=<locus>&genome=<geno
 5. Output one row **per supplied ID** that was successfully matched.
 
 ### Mixed-build handling
-If `--genome` is not specified and a supplied sample set spans multiple
+If `-a`/`--assembly` is not specified and a supplied sample set spans multiple
 assemblies, samples are split by assembly, and **one URL per assembly group**
 is emitted. A stderr notice lists the split. This means a participant whose
 family has samples in both builds will appear in two output rows (one per
@@ -216,7 +218,7 @@ Tab-separated, written to stdout or `-o FILE`. Always includes a header row.
 | `participant_id` | Participant ID for the supplied ID |
 | `family_id` | `family_grouping` value |
 | `genome_assembly` | `GRCh38` or `GRCh37` |
-| `igv_url` | The full `igv://load?...` URL |
+| `igv_url` | The full `http://localhost:<port>/load?...` URL |
 
 One row per successfully matched input ID per assembly. If a participant has
 BAM files for both assemblies, they will appear in two rows (one per assembly),
@@ -234,8 +236,8 @@ group and assembly, they each get their own row but share the same `igv_url`.
 | S3 download fails | Exit with error; suggest `--refresh-cache` or checking IAM permissions |
 | Missing config file | Exit with error and instructions |
 | Missing `[genomes]` entry for a build | Warning; fall back to IGV built-in genome ID |
-| `--genome` override skips some samples | Warning per skipped sample |
-| All samples excluded by `--genome` filter | Exit with error |
+| `-a`/`--assembly` override skips some samples | Warning per skipped sample |
+| All samples excluded by `-a`/`--assembly` filter | Exit with error |
 
 ---
 
@@ -243,7 +245,7 @@ group and assembly, they each get their own row but share the same `igv_url`.
 
 - `boto3` — S3 file download (uses IAM instance profile; no explicit credentials)
 - `pandas` — manifest loading, joining, and filtering
-- `tomllib` (stdlib ≥ 3.11) or `tomli` — config parsing
+- `tomllib` (stdlib ≥ 3.11) — config parsing
 
 ---
 
@@ -259,20 +261,20 @@ group and assembly, they each get their own row but share the same `igv_url`.
 
 ---
 
-## Files to Create / Modify
+## Files (implemented)
 
-| File | Action |
+| File | Role |
 |---|---|
-| `src/aggv3_igv/igv_url/cli.py` | New — argument parsing, orchestration |
-| `src/aggv3_igv/igv_url/config.py` | New — config file loading (`[genomes]` + `[s3_files]`) |
-| `src/aggv3_igv/igv_url/manifest.py` | New — S3 download, caching, join logic (mirrors `combine_annotations`) |
-| `src/aggv3_igv/igv_url/locus.py` | New — locus string parsing and normalisation |
-| `src/aggv3_igv/igv_url/url.py` | New — `igv://` URL construction |
-| `pyproject.toml` | Add `[project.scripts]` entry and `boto3`/`tomli` dependencies |
+| `src/aggv3_igv/igv_url/cli.py` | Argument parsing, orchestration |
+| `src/aggv3_igv/igv_url/config.py` | Config file loading (`[url]` + `[genomes]` + `[s3_files]`) |
+| `src/aggv3_igv/igv_url/manifest.py` | S3 download, caching, join logic (mirrors `combine_annotations`) |
+| `src/aggv3_igv/igv_url/locus.py` | Locus string parsing and normalisation |
+| `src/aggv3_igv/igv_url/url.py` | IGV REST API URL construction |
+| `pyproject.toml` | `[project.scripts]` entry and `boto3` dependency |
 
-The new code lives under `src/aggv3_igv/igv_url/` (the directory already
-exists in the repo). Existing scripts (`construct_igv_url.py`,
-`tidy_data_for_igv.py`, `filter_igv_by_cohort.py`) are **not modified**.
+The code lives under `src/aggv3_igv/igv_url/`. Existing scripts
+(`construct_igv_url.py`, `tidy_data_for_igv.py`, `filter_igv_by_cohort.py`) are
+the legacy pipeline and are **not modified**.
 
 ---
 
@@ -280,25 +282,25 @@ exists in the repo). Existing scripts (`construct_igv_url.py`,
 
 ```bash
 # 1. Populate cache (first run)
-aggv3_igv --participants 111000001,111000002 --locus chr22:43011250-43011399
+aggv3_igv --participants 111000001,111000002 -r chr22:43011250-43011399
 
 # 2. Variant ID form with window
-aggv3_igv --participants-file participants.txt --locus chr12:1234567:G:A --window 150
+aggv3_igv --participants-file participants.txt -r chr12:1234567:G:A --window 150
 
 # 3. Write to file, no participant ID in labels
-aggv3_igv --participants 111000001 --locus chr7:117120000 --no-participant-id -o out.tsv
+aggv3_igv --participants 111000001 -r chr7:117120000 --no-participant-id -o out.tsv
 
 # 4. Sample (platekey) input
-aggv3_igv --samples LP1234567-DNA_A01 --locus chr1:1000000-1001000
+aggv3_igv --samples LP1234567-DNA_A01 -r chr1:1000000-1001000
 
 # 5. Participant with data in both assemblies (expect two rows)
-aggv3_igv --participants 111000003 --locus chr1:1000000-1001000
+aggv3_igv --participants 111000003 -r chr1:1000000-1001000
 
 # 6. Unknown ID (expect warning + skip)
-aggv3_igv --participants INVALID_ID --locus chr1:1000000
+aggv3_igv --participants INVALID_ID -r chr1:1000000
 
 # 7. Refresh cache then run
-aggv3_igv --participants 111000001 --locus chr1:1000000 --refresh-cache
+aggv3_igv --participants 111000001 -r chr1:1000000 --refresh-cache
 ```
 
 Confirm output TSV has correct columns, URL scheme is `http://localhost:<port>/load?...`, track

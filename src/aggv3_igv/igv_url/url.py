@@ -1,5 +1,6 @@
 """Build igv:// protocol-handler URLs."""
 
+import re
 import sys
 from urllib.parse import quote
 
@@ -35,7 +36,13 @@ def build_url(
         genome_path = fallback
 
     def _label(row: pd.Series) -> str:
-        rel = row.get("relationship_to_proband") or "unknown"
+        flag = row.get("proband")
+        is_proband = pd.notna(flag) and bool(flag)
+        if is_proband:
+            rel = "proband"
+        else:
+            rel = row.get("relationship_to_proband") or "unknown"
+            rel = re.sub(r"\s+", "_", str(rel).lower())
         kary = row.get("karyotype_est") or "unknown"
         if no_participant_id:
             return f"{rel}_{kary}"
