@@ -64,7 +64,10 @@ def _load_ids(path: Path) -> pd.DataFrame:
                 "platekey": "sample_id",
             }
         )
-        .drop_duplicates("participant_id")
+        # Dedupe on (participant_id, platekey) rather than participant_id alone:
+        # a participant may have several platekeys, and keeping only the first
+        # row would silently drop the others, breaking `-s`/`-S` sample lookups.
+        .drop_duplicates(["participant_id", "sample_id"])
     )
 
 

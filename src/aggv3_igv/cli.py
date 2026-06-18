@@ -167,7 +167,13 @@ def main() -> None:
             matched[["family_grouping", "dna_assembly"]].drop_duplicates().to_numpy(),
         )
     )
-    family_pool = manifest.loc[manifest["dna_bam"].notna()]
+    # One row per participant per assembly: a participant with several
+    # platekeys appears multiple times in the manifest, but their BAM/CRAM and
+    # labels are participant-keyed, so collapse duplicates here to avoid listing
+    # the same track more than once in the IGV URL.
+    family_pool = manifest.loc[manifest["dna_bam"].notna()].drop_duplicates(
+        ["participant_id", "dna_assembly"]
+    )
 
     group_url: dict[tuple, str] = {}
     for (family, assembly), grp in family_pool.groupby(

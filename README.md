@@ -11,14 +11,14 @@ tracks for the given participant and their family members.
 Open a terminal in any interactive CloudOS session.
 
 ### Global install
-Install uv:
-`conda install uv`
+Install uv (a Conda install is necessitated by CloudOS):
+`conda install uv` 
 
 Install aggv3_igv:
 `uv tool install git+https://github.com/alexblakes/aggv3_igv.git`
 
-(You might need to update your path and/or restart your shell):
-``` bash
+(You might need to update your path and/or restart your shell if prompted by uv):
+```bash
 uv tool update-shell
 bash
 ```

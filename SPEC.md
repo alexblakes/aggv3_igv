@@ -42,7 +42,11 @@ Five S3 files are enumerated in the `[s3_files]` section of the config file.
 **Step 1 — IDs** (`aggv3_sample_list`): columns `participant_id`,
 `family_grouping`, `platekey` (= `sample_id`),
 `dragen_karyotypic_sex_estimation` (→ `karyotype_est`), `type`. Deduplicated on
-`participant_id` (first row kept).
+`(participant_id, platekey)` so every distinct sample survives — a participant
+may have multiple platekeys, and deduplicating on `participant_id` alone would
+drop the others and break `-s`/`-S` sample lookups. When building per-family IGV
+URLs the manifest is collapsed back to one row per participant per assembly so a
+participant's track is not listed more than once.
 
 **Step 2 — DNA paths**: read `gel_file_paths` (filter `file_sub_type == "BAM"`,
 keep most recent per `participant_id`) and `gms_file_paths` (filter
