@@ -57,6 +57,7 @@ def _load_ids(path: Path) -> pd.DataFrame:
                 "dragen_karyotypic_sex_estimation",
                 "type",
             ],
+            dtype={"participant_id": str},
         )
         .rename(
             columns={
@@ -82,6 +83,7 @@ def _load_gel_bams(path: Path) -> pd.DataFrame:
                 "file_sub_type",
             ],
             header=0,
+            dtype={"participant_id": str},
         )
         .rename(columns={"weka_file_path": "file_path"})
         .loc[lambda df: df["file_sub_type"] == "BAM"]
@@ -107,6 +109,7 @@ def _load_gms_bams(path: Path) -> pd.DataFrame:
                 "file_sub_type",
             ],
             header=0,
+            dtype={"participant_id": str},
         )
         .rename(columns={"path": "file_path"})
         .loc[lambda df: df["file_sub_type"] == "CRAM"]
@@ -163,6 +166,7 @@ def _load_gms_participant(path: Path) -> pd.DataFrame:
                 "referral_participant_is_proband",
                 "relationship_to_proband",
             ],
+            dtype={"participant_id": str},
         )
         .rename(columns={"referral_participant_is_proband": "proband"})
         .replace({"proband": {"t": True, "f": False}})
