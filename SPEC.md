@@ -185,8 +185,8 @@ http://localhost:<port>/load?file=<path1>,<path2>,...&locus=<locus>&genome=<geno
    to. For each such group, gather **all** family members with a BAM/CRAM in the
    manifest (relations are auto-included, not just the supplied IDs), mirroring
    the historic pipeline.
-3. For each group, sort samples by their track label (`name`) value, matching
-   the historic pipeline's `.sort_values("name")`.
+3. For each group, order the tracks alphabetically by `relationship_to_proband`
+   (the proband is labelled `proband`); `participant_id` breaks ties.
 4. Construct one URL per group, with the group's BAM paths and track labels
    comma-joined in `file=` / `name=`. The same URL appears in multiple output
    rows if more than one supplied ID belongs to the same family group.
