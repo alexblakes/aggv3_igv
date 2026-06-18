@@ -141,7 +141,7 @@ of IDs is used.
 |---|---|---|
 | `-o / --output FILE` | stdout | Write TSV to this file instead of stdout |
 | `-w / --window BP` | IGV default | Half-window in bp around a variant locus (see below) |
-| `--no-participant-id` | off | Exclude `participant_id` from track labels |
+| `--no-identifiers` | off | Exclude `participant_id` from track labels |
 | `--assembly BUILD` | from manifest | Override genome build for all samples (e.g. `GRCh38`); samples not matching this build are skipped with a warning |
 | `--refresh-cache` | off | Re-download all S3 files and overwrite the local cache, then proceed normally |
 
@@ -207,7 +207,7 @@ Default label per track: `{participant_id}_{relationship_to_proband}_{karyotype_
 
 Example: `PT-001234_proband_46XX`
 
-With `--no-participant-id`: `{relationship_to_proband}_{karyotype_est}`
+With `--no-identifiers`: `{relationship_to_proband}_{karyotype_est}`
 
 Example: `proband_46XX` (matches the existing pipeline's label format)
 
@@ -294,7 +294,7 @@ aggv3_igv --participants 111000001,111000002 -r chr22:43011250-43011399
 aggv3_igv --participants-file participants.txt -r chr12:1234567:G:A --window 150
 
 # 3. Write to file, no participant ID in labels
-aggv3_igv --participants 111000001 -r chr7:117120000 --no-participant-id -o out.tsv
+aggv3_igv --participants 111000001 -r chr7:117120000 --no-identifiers -o out.tsv
 
 # 4. Sample (platekey) input
 aggv3_igv --samples LP1234567-DNA_A01 -r chr1:1000000-1001000

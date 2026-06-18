@@ -185,7 +185,7 @@ def main() -> None:
             locus=locus,
             genomes=cfg.get("genomes", {}),
             port=str(cfg["url"]["port"]),
-            no_participant_id=args.no_participant_id,
+            no_participant_id=args.no_identifiers,
         )
 
     # Emit one row per supplied ID per assembly
