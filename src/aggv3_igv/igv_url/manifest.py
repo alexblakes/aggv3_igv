@@ -89,7 +89,7 @@ def _load_gel_bams(path: Path) -> pd.DataFrame:
         .drop_duplicates("participant_id")
         .loc[:, ["participant_id", "genome_build", "file_path"]]
         .check.head()
-        .check.function(lambda x: x["participant_id"] == "112003459")
+        .check.function(lambda x: x.loc[lambda x: x["participant_id"] == "112003459"])
     )
 
 
