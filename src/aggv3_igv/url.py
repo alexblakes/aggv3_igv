@@ -19,12 +19,7 @@ def build_url(
     port: str,
     no_participant_id: bool = False,
 ) -> str:
-    # Proband first, then alphabetically by participant_id
-    ordered = group.sort_values(
-        ["proband", "participant_id"], ascending=[False, True]
-    ).reset_index(drop=True)
-
-    dna_assembly = ordered["dna_assembly"].iloc[0]
+    dna_assembly = group["dna_assembly"].iloc[0]
     genome_path = genomes.get(dna_assembly)
     if genome_path is None:
         fallback = _GENOME_FALLBACK.get(dna_assembly, dna_assembly)
@@ -49,8 +44,14 @@ def build_url(
         pid = row.get("participant_id") or "unknown"
         return f"{pid}_{rel}_{kary}"
 
-    files = ordered["dna_bam"].tolist()
-    names = [_label(row) for _, row in ordered.iterrows()]
+    # Sort file paths and labels by the track-label ("name") value, matching
+    # the historic pipeline's `.sort_values("name")`.
+    labeled = sorted(
+        ((_label(row), row["dna_bam"]) for _, row in group.iterrows()),
+        key=lambda pair: pair[0],
+    )
+    names = [name for name, _ in labeled]
+    files = [path for _, path in labeled]
 
     # Build query string manually so comma-separated file/name lists aren't
     # double-encoded; NFS paths contain slashes that must be encoded in the
