@@ -220,6 +220,8 @@ Tab-separated, written to stdout or `-o FILE`. Always includes a header row.
 | Column | Content |
 |---|---|
 | `participant_id` | Participant ID for the supplied ID |
+| `platekey` | `sample_id` (platekey) for the participant |
+| `type` | `type` value, with whitespace replaced by `_` |
 | `family_id` | `family_grouping` value |
 | `genome_assembly` | `GRCh38` or `GRCh37` |
 | `igv_url` | The full `http://localhost:<port>/load?...` URL |

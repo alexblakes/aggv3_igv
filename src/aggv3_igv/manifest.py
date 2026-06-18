@@ -5,7 +5,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import pandas_checks as pdc  # noqa: F401  (registers the .check DataFrame accessor)
 
 CACHE_DIR = Path.home() / ".cache" / "aggv3_igv"
 
@@ -90,8 +89,6 @@ def _load_gel_bams(path: Path) -> pd.DataFrame:
         .sort_values(["genome_build", "delivery_date"], ascending=False)
         .drop_duplicates("participant_id")
         .loc[:, ["participant_id", "genome_build", "file_path"]]
-        .check.head()
-        .check.function(lambda x: x.loc[lambda x: x["participant_id"] == "112003459"])
     )
 
 

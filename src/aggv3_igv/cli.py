@@ -1,6 +1,7 @@
 """aggv3_igv CLI entry point."""
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -190,12 +191,15 @@ def main() -> None:
         for (family, assembly), _ in id_rows.groupby(
             ["family_grouping", "dna_assembly"]
         ):
-            pid = id_rows.loc[
-                id_rows["dna_assembly"] == assembly, "participant_id"
-            ].iloc[0]
+            row = id_rows.loc[id_rows["dna_assembly"] == assembly].iloc[0]
+            type_val = (
+                "" if pd.isna(row["type"]) else re.sub(r"\s+", "_", str(row["type"]))
+            )
             rows.append(
                 {
-                    "participant_id": pid,
+                    "participant_id": row["participant_id"],
+                    "platekey": row["sample_id"],
+                    "type": type_val,
                     "family_id": family,
                     "genome_assembly": assembly,
                     "igv_url": group_url[(family, assembly)],
@@ -203,7 +207,15 @@ def main() -> None:
             )
 
     result = pd.DataFrame(
-        rows, columns=["participant_id", "family_id", "genome_assembly", "igv_url"]
+        rows,
+        columns=[
+            "participant_id",
+            "platekey",
+            "type",
+            "family_id",
+            "genome_assembly",
+            "igv_url",
+        ],
     )
 
     tsv = result.to_csv(sep="\t", index=False)
