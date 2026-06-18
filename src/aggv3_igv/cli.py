@@ -32,7 +32,7 @@ def _build_parser() -> argparse.ArgumentParser:
         prog="aggv3_igv",
         description="Construct igv:// URLs for participants or samples in AggV3.",
     )
-    parser.add_argument("-r", "--region", required=True, help="Genomic locus")
+    parser.add_argument("-r", "--region", required=True, help="chr:pos|chr:beg-end")
     parser.add_argument(
         "-p", "--participants", metavar="IDs", help="Comma-separated participant IDs"
     )
@@ -51,30 +51,7 @@ def _build_parser() -> argparse.ArgumentParser:
         "--samples-file",
         type=Path,
         metavar="FILE",
-        help="File with one sample ID per line",
-    )
-    parser.add_argument(
-        "-w",
-        "--window",
-        type=int,
-        metavar="BP",
-        help="Half-window around a variant locus",
-    )
-    parser.add_argument(
-        "--no-participant-id",
-        action="store_true",
-        help="Exclude participant ID from track labels",
-    )
-    parser.add_argument(
-        "-a",
-        "--assembly",
-        metavar="BUILD",
-        help="Override genome build (e.g. GRCh38); other assemblies skipped",
-    )
-    parser.add_argument(
-        "--refresh-cache",
-        action="store_true",
-        help="Re-download all S3 files before running",
+        help="File with one sample ID (platekey) per line",
     )
     parser.add_argument(
         "-o",
@@ -83,6 +60,33 @@ def _build_parser() -> argparse.ArgumentParser:
         metavar="FILE",
         help="Write TSV to this file (default: stdout)",
     )
+    parser.add_argument(
+        "-w",
+        "--window",
+        type=int,
+        metavar="bp",
+        help="Show +/- this distance (in nt) around the given region",
+    )
+
+    parser.add_argument(
+        "-a",
+        "--assembly",
+        metavar="ASSEMBLY",
+        help="Override genome build (e.g. GRCh38); other assemblies skipped",
+    )
+
+    parser.add_argument(
+        "--no-identifiers",
+        action="store_true",
+        help="Exclude participant ID from the track labels",
+    )
+
+    parser.add_argument(
+        "--refresh-cache",
+        action="store_true",
+        help="Re-download all S3 files before running",
+    )
+
     return parser
 
 
