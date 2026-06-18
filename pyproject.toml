@@ -11,16 +11,43 @@ authors = [
   {name = "Alex Blakes"}
 ]
 license = {text = "MIT"}
-
-[project.dependencies]
-python = "3.13.*"
-numpy = ">=2.4.3,<3"
-pandas = "3.*"
-ruff = ">=0.15.9,<0.16"
-boto3 = ">=1.35"
-aggv3_igv = { path = ".", editable = true } # noqa
+requires-python = ">=3.11"
+dependencies = [
+  "pandas>=2",
+  "numpy>=1.24",
+  "boto3>=1.35",
+]
 
 [project.scripts]
 aggv3_igv = "aggv3_igv.cli:main"
 
-# [tool.pixi.pypi-dependencies]
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge", "bioconda"]
+platforms = ["osx-arm64", "linux-64"]
+conda-pypi-map = { conda-forge = "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json", bioconda = "https://raw.githubusercontent.com/prefix-dev/parselmouth/refs/heads/main/files/compressed_mapping.json" }
+exclude-newer = "7 days"
+
+[tool.pixi.dependencies]
+python = "3.13.*"
+numpy = ">=2.4.3,<3"
+pandas = "3.*"
+ipykernel = ">=7.2.0,<8"
+pip = ">=26.0.1,<27"
+ruff = ">=0.15.9,<0.16"
+
+[tool.pixi.pypi-dependencies]
+pandas-checks = '>=2,<3'
+aggv3_igv = { path = ".", editable = true } # noqa
+
+[tool.pixi.pypi-exclude-newer]
+aggv3_igv = "1 second"
+pandas-checks = "1 second"
+
+[tool.pixi.tasks]
+ruff_lint = "ruff check --fix"
+ruff_format = "ruff format"
+smk_format = "snakefmt Snakefile scripts/"
+fmt = { depends-on = ["ruff_lint", "ruff_format", "smk_format"] }

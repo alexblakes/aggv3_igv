@@ -5341,6 +5341,11 @@ packages:
   timestamp: 1764777166076
 - pypi: .
   name: aggv3-igv
+  requires_dist:
+  - pandas>=2
+  - numpy>=1.24
+  - boto3>=1.35
+  requires_python: '>=3.11'
 - pypi: https://files.pythonhosted.org/packages/14/2f/967ba146e6d58cf6a652da73885f52fc68001525b4197effc174321d70b4/jmespath-1.1.0-py3-none-any.whl
   name: jmespath
   version: 1.1.0
