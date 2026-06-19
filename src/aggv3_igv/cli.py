@@ -203,7 +203,7 @@ def main() -> None:
             # Use the relationship to proband, but label probands themselves as
             # "Proband" (their own relationship field is empty).
             if row["proband"] is True:
-                relationship = "Proband"
+                relationship = "proband"
             elif pd.isna(row["relationship_to_proband"]):
                 relationship = ""
             else:
