@@ -200,11 +200,20 @@ def main() -> None:
             type_val = (
                 "" if pd.isna(row["type"]) else re.sub(r"\s+", "_", str(row["type"]))
             )
+            # Use the relationship to proband, but label probands themselves as
+            # "Proband" (their own relationship field is empty).
+            if row["proband"] is True:
+                relationship = "Proband"
+            elif pd.isna(row["relationship_to_proband"]):
+                relationship = ""
+            else:
+                relationship = str(row["relationship_to_proband"])
             rows.append(
                 {
                     "participant_id": row["participant_id"],
                     "platekey": row["sample_id"],
                     "type": type_val,
+                    "relationship_to_proband": relationship,
                     "family_id": family,
                     "genome_assembly": assembly,
                     "igv_url": group_url[(family, assembly)],
@@ -217,6 +226,7 @@ def main() -> None:
             "participant_id",
             "platekey",
             "type",
+            "relationship_to_proband",
             "family_id",
             "genome_assembly",
             "igv_url",
