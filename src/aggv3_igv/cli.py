@@ -37,45 +37,37 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("-r", "--region", required=True, help="chr:pos|chr:beg-end")
 
     ids = parser.add_mutually_exclusive_group(required=True)
-    ids.add_argument(
-        "-p", "--participants", metavar="IDs", help="Comma-separated participant IDs"
-    )
+    ids.add_argument("-p", "--participants", help="Comma-separated participant IDs")
     ids.add_argument(
         "-P",
         "--participants-file",
         type=Path,
-        metavar="FILE",
         help="File with one participant ID per line",
     )
-    ids.add_argument(
-        "-s", "--samples", metavar="IDs", help="Comma-separated sample IDs (platekeys)"
-    )
+    ids.add_argument("-s", "--samples", help="Comma-separated sample IDs (platekeys)")
     ids.add_argument(
         "-S",
         "--samples-file",
         type=Path,
-        metavar="FILE",
         help="File with one sample ID (platekey) per line",
     )
     parser.add_argument(
         "-o",
         "--output",
         type=Path,
-        metavar="FILE",
         help="Write TSV to this file (default: stdout)",
     )
     parser.add_argument(
         "-w",
         "--window",
         type=int,
-        metavar="bp",
         help="Show +/- this distance (in nt) around the given region",
     )
 
     parser.add_argument(
         "-a",
         "--assembly",
-        metavar="ASSEMBLY",
+        choices=["GRCh37", "GRCh38"],
         help="Override genome build (e.g. GRCh38); other assemblies skipped",
     )
 
